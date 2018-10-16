@@ -1,7 +1,7 @@
 {
   "name": "config-with-paramstore",
   "version": "1.0.0",
-  "description": "",
+  "description": "a node module that makes it easy to create config files that reference aws paramstore with __PLACEHOLDER__s",
   "main": "src/index.js",
   "scripts": {
     "lint": "echo 'todo'",
