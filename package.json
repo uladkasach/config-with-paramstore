@@ -1,6 +1,6 @@
 {
   "name": "config-with-paramstore",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a node module that makes it easy to create config files that reference aws paramstore with __PLACEHOLDER__s",
   "main": "dist/config.js",
   "scripts": {
