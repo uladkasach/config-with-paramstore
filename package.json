@@ -2,12 +2,12 @@
   "name": "config-with-paramstore",
   "version": "1.0.0",
   "description": "a node module that makes it easy to create config files that reference aws paramstore with __PLACEHOLDER__s",
-  "main": "src/index.js",
+  "main": "dist/config.js",
   "scripts": {
     "lint": "echo 'todo'",
     "unit-test": "jest --verbose",
     "test": "npm run lint && npm run unit-test",
-    "build": "rm dist/ -rf && babel src -d dist/ --ignore '**/__mocks__/*'",
+    "build": "rm dist/ -rf && babel src -d dist/ --ignore '**/__mocks__/*','**.test.js'",
     "acceptance-test": "npm run build && jest --verbose --config ./acceptance-tests/jest.config.js ./acceptance-tests "
   },
   "author": "UladKasach",

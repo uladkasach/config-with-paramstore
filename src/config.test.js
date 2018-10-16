@@ -11,6 +11,7 @@ jest.mock('aws-sdk');
 */
 describe('config', () => {
   it('should be able to evaluate standard config', async () => {
+    // the fs mock returns the config object
     const configObject = new Config();
     const config = await configObject.get();
     expect(config).toMatchObject({
