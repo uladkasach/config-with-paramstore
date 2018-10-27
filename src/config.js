@@ -2,6 +2,7 @@ import flatten, { unflatten } from 'flat';
 import extractConfig from './utils/file';
 import determineEnvironment from './utils/environment';
 import extractParamsForConfig from './utils/params';
+import extractEnvsForConfig from './utils/envs';
 
 /**
   generate config based on environment
@@ -18,8 +19,11 @@ const generateConfigForEnvironment = async (env) => {
   // extract params from param store
   const flatParams = await extractParamsForConfig(flatBaseConfig); // looks for all `__PARAM__` entries and resolves values for each
 
+  // extract params from environmental variables
+  const flatEnvs = await extractEnvsForConfig(flatBaseConfig); // looks for all `__ENV__` entries and resolves values for each
+
   // merge config object with params
-  const flatConfig = Object.assign({}, flatBaseConfig, flatParams);
+  const flatConfig = Object.assign({}, flatBaseConfig, flatEnvs, flatParams);
 
   // convert flat configs to normal configs
   const config = unflatten(flatConfig);

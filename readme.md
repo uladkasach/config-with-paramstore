@@ -100,3 +100,10 @@ const configInstance = new Config();
 })()
 
 ```
+
+# Extras
+
+## Environmental Variables
+This package supoprts setting environmental variables in your config with the `__ENV__` key. You can use packages like `dotenv` to source environmental variables from files into your env. This package will not do that for you.
+
+You can define a namespace for envVariables, just like you can do for param store, with the config key `environmentVariableNamespace`. Note: environmental variables can not have periods in their names, so you must use underscores (`_`) instead of periods (`.`). 

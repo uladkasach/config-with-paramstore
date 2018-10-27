@@ -10,6 +10,7 @@ jest.mock('aws-sdk');
   define tests
 */
 describe('config', () => {
+  process.env.database_envpassword = 'database_envpassword-value';
   it('should be able to evaluate standard config', async () => {
     // the fs mock returns the config object
     const configObject = new Config();
@@ -19,6 +20,7 @@ describe('config', () => {
       database: {
         username: 'exampleConfig',
         password: 'database.password-value',
+        envpassword: 'database_envpassword-value',
       },
     });
   });
