@@ -1,4 +1,8 @@
+import AWS from 'aws-sdk';
 import extractParamsForConfig from './params';
+
+// define the mock function we use to evaluate whether we call aws
+const ssm = new AWS.SSM();
 
 /**
   define mocks
@@ -9,6 +13,9 @@ jest.mock('aws-sdk');
 /**
   define tests
 */
+beforeEach(() => {
+  ssm.getParameters.mockClear();
+});
 describe('retreive parameters', async () => {
   it('should retreive parameters for root level __PARAM__', async () => {
     const params = await extractParamsForConfig({ testKey: '__PARAM__' });
@@ -27,5 +34,10 @@ describe('retreive parameters', async () => {
     expect(params).toMatchObject({
       testKey: 'test.testKey-value',
     });
+  });
+  it('should not call aws if no param keys are requested', async () => {
+    const params = await extractParamsForConfig({ parameterStoreNamespace: 'test', testKey: '__ENV__' });
+    expect(params).toMatchObject({});
+    expect(ssm.getParameters.mock.calls.length).toEqual(0);
   });
 });

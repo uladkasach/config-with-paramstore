@@ -1,9 +1,9 @@
-const getParameters = opts => ({
+const getParameters = jest.fn().mockImplementation(opts => ({
   promise: async () => ({
     Parameters: opts.Names.map(param => ({ Name: param, Value: `${param}-value` })),
     InvalidParameters: [],
   }),
-});
+}));
 
 const SSM = jest.fn().mockImplementation(() => ({
   getParameters,

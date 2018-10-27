@@ -30,7 +30,9 @@ const extractParamsForConfig = async (flatConfig) => {
   });
 
   // 3. retreive value for each awsParamKey
-  const { Parameters, InvalidParameters } = await ssm.getParameters({ Names: awsParamKeys, WithDecryption: true }).promise();
+  const { Parameters, InvalidParameters } = (awsParamKeys.length) // query aws only if we have params we are looking for
+    ? await ssm.getParameters({ Names: awsParamKeys, WithDecryption: true }).promise() // query aws
+    : { Parameters: [], InvalidParameters: [] }; // return empty results; dont query aws
   if (InvalidParameters.length > 0) throw new Error(`found invalid parameters: ${JSON.stringify(InvalidParameters)}`); // throw error if invalids
 
   // 4. create object of parameters resolved
