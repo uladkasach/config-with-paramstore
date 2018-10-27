@@ -8,7 +8,8 @@
     "unit-test": "jest --verbose",
     "test": "npm run lint && npm run unit-test",
     "build": "rm dist/ -rf && babel src -d dist/ --ignore '**/__mocks__/*','**.test.js'",
-    "acceptance-test": "npm run build && jest --verbose --config ./acceptance-tests/jest.config.js ./acceptance-tests "
+    "acceptance-test": "npm run build && jest --verbose --config ./acceptance-tests/jest.config.js ./acceptance-tests ",
+    "prepublish": "npm run build"
   },
   "author": "UladKasach",
   "license": "ISC",
@@ -37,6 +38,7 @@
     "eslint": "^5.4.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
+    "husky": "^1.1.2",
     "jest": "^23.5.0"
   }
 }
