@@ -40,4 +40,12 @@ describe('retreive parameters', async () => {
     expect(params).toMatchObject({});
     expect(ssm.getParameters.mock.calls.length).toEqual(0);
   });
+  it('should call parameter store once per key required', async () => {
+    const params = await extractParamsForConfig({ parameterStoreNamespace: 'test', testKey: '__PARAM__', testKeyTwo: '__PARAM__' });
+    expect(params).toMatchObject({
+      testKey: 'test.testKey-value',
+      testKeyTwo: 'test.testKeyTwo-value',
+    });
+    expect(ssm.getParameters.mock.calls.length).toEqual(2);
+  });
 });

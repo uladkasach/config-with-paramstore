@@ -6,6 +6,18 @@ import AWS from 'aws-sdk';
 const ssm = new AWS.SSM();
 
 /**
+  getValueFromParamstore
+  @param awsParamKey
+  1. request parameter from aws
+  2. if InvalidParameter returned, throw error
+*/
+const getValueFromParamstore = async (awsParamKey) => {
+  const { Parameters, InvalidParameters } = await ssm.getParameters({ Names: [awsParamKey], WithDecryption: true }).promise(); // query aws
+  if (InvalidParameters.length) throw new Error('invalid parameter');
+  return Parameters[0];
+};
+
+/**
   extractParamsForConfig
   @param flatConfig
   1. find all __PARAM__ values in the flattened config object
@@ -30,18 +42,35 @@ const extractParamsForConfig = async (flatConfig) => {
   });
 
   // 3. retreive value for each awsParamKey
-  const { Parameters, InvalidParameters } = (awsParamKeys.length) // query aws only if we have params we are looking for
-    ? await ssm.getParameters({ Names: awsParamKeys, WithDecryption: true }).promise() // query aws
-    : { Parameters: [], InvalidParameters: [] }; // return empty results; dont query aws
-  if (InvalidParameters.length > 0) throw new Error(`found invalid parameters: ${JSON.stringify(InvalidParameters)}`); // throw error if invalids
+  const promisesOfParamValues = awsParamKeys.map(async (key) => {
+    let value;
+    let valid = false;
+    try {
+      value = await getValueFromParamstore(key);
+      valid = true;
+    } catch (error) {
+      if (error.message !== 'invalid parameter') throw error; // if we did not expect this, forward the error
+      valid = false;
+    }
+    return {
+      key,
+      valid,
+      value,
+    };
+  });
+  const paramResponses = await Promise.all(promisesOfParamValues);
+  const invalidParameters = paramResponses.filter(response => !response.valid);
+  const invalidParameterKeys = invalidParameters.map(param => param.key);
+  if (invalidParameters.length > 0) throw new Error(`found invalid parameters: ${JSON.stringify(invalidParameterKeys)}`); // throw error if invalids
 
   // 4. create object of parameters resolved
   const params = {};
-  awsParamKeys.forEach((key, index) => {
+  paramResponses.forEach((param) => {
+    const { key, value } = param;
     const keyWithoutNamespace = (normalizedNameSpace) // remove first `normalizedNameSpace.length;` chars, if normalizedNameSpace exists
       ? key.substring(normalizedNameSpace.length)
       : key;
-    params[keyWithoutNamespace] = Parameters[index].Value; // get the value of the corrosponding key
+    params[keyWithoutNamespace] = value.Value; // get the value of the corrosponding key
   });
 
   // 5. return the resultant params
